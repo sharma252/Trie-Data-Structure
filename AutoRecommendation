@@ -1,0 +1,129 @@
+//Auto Complete recommendation:
+#include<bits/stdc++.h>
+using namespace std;
+
+class trieNode{
+  public:
+  char ch;
+  trieNode* child[26];
+  bool isEnd;
+  trieNode(){
+    for(int i=0;i<26;i++)
+      child[i]=0;
+    isEnd=false;
+  }
+
+  void insert(vector<string> ip,int n,trieNode *root);
+  void insertHelper(string s,trieNode *root);
+};
+
+void trieNode :: insertHelper(string s,trieNode *root){
+  trieNode *cur = root;
+  int idx;
+  for(int i=0;i<s.size();i++){
+    idx=s[i]-'a';
+    if(!cur->child[idx]){
+        trieNode * newChild = new trieNode();
+        cur->child[idx] = newChild;
+    }
+    cur=cur->child[idx];
+    if(i==s.size()-1)
+      cur->isEnd=true;
+  }
+}
+
+void trieNode :: insert(vector<string> ip,int n,trieNode *root){
+  for(auto it : ip)
+    insertHelper(it,root);
+}
+
+//Function to check if current node is leaf node.
+bool isLastNode(trieNode* root){
+	for(int i=0;i<26;i++){
+		if(root->child[i])
+			return 0;
+	}
+	return 1;
+}
+
+//The recursive function to print all the possible recommendation possible.
+void suggestionRec(trieNode* root,string curPrefix){
+  //Base case if we hit a word print it and move forward.
+	if(root->isEnd)
+		cout<<curPrefix<<endl;
+
+  //Now see after printing it we dont want that particular word to stay in our prefix
+  //So we pop it and return.
+	if(isLastNode(root)){
+		curPrefix.pop_back();
+		return;
+	}
+
+  //Otherwise traverse all the child of cur node push the char in our ans
+  //Make a recursive call with cur prefix.
+	for(int i=0;i<26;i++){
+		if(root->child[i]){
+			curPrefix.push_back(i + 'a');
+			suggestionRec(root->child[i],curPrefix);
+		}
+	}
+  //After traversal remove the last character added, so that we can backtrack and find a new way.
+  curPrefix.pop_back();
+}
+
+int printAutoSuggestion(trieNode* root, string query){
+	trieNode* cur = root;
+	int n = query.size(),idx;
+
+	for(int i=0;i<n;i++){
+		idx = query[i]-'a';
+    //If at any index we found that no such word exist we directly return zero.
+		if(cur->child[idx]==0)
+			return 0;
+		cur=cur->child[idx];
+	}
+
+  //Make a check if the current string is itself a word present in trie and
+  //If it is the last word, just print and return -1 means no more recommendation exists.
+	bool isWord = (cur->isEnd==true);
+	bool isLast = isLastNode(cur);
+
+	if(isWord && isLast){
+		cout<<query<<" ";
+		return -1;
+	}
+  //Otherwise if further recommendation exists
+  //Make a call with cur string and pointer that pointing to last element of our string
+  //So that we can make further recommendation.
+	if(isLast==false){
+		string prefix = query;
+		suggestionRec(cur,prefix);
+		return 1;
+	}
+}
+
+int main(){
+  int n;
+  cin>>n;
+  vector<string> ip;
+  trieNode * root = new trieNode();
+  trieNode trie;
+
+  for(int i=0;i<n;i++){
+    string s;
+    cin>>s;
+    ip.push_back(s);
+  }
+
+  string query;
+  cin>>query;
+
+  trie.insert(ip,n,root);
+  cout<<endl;
+  int ans = printAutoSuggestion(root,query);
+
+  if(ans==-1)
+    cout<<"No more suggestions present."<<endl;
+  else if(ans==0)
+    cout<<"No such element exists."<<endl;
+}
