@@ -19,18 +19,16 @@ class trieNode{
     isEnd=false;
   }
   //Givem below are all the operations that are performed on trie.
-  void insert(vector<string> ip,int n);
-  void insertHelper(string s);
-  void search(vector<string> op,int m);
-  void searchHelper(string s);
-  void remove(vector<string> dl,int s3);
-  void removeHelper(string s);
+  void insert(vector<string> ip,int n,trieNode *root);
+  void insertHelper(string s,trieNode *root);
+  void search(vector<string> op,int m,trieNode *root);
+  void searchHelper(string s,trieNode *root);
+  void remove(vector<string> dl,int s3,trieNode *root);
+  void removeHelper(string s,trieNode *root);
 };
-//A root node with default value and that has been taken as a refernece in all the operations.
-trieNode *root = new trieNode();
 
 //Helper function to implement insert operation.
-void trieNode :: insertHelper(string s){
+void trieNode :: insertHelper(string s,trieNode *root){
   //take a temporary pointer that refer to root.
   trieNode *cur = root;
   int idx;
@@ -49,12 +47,12 @@ void trieNode :: insertHelper(string s){
   }
 }
 
-void trieNode :: insert(vector<string> ip,int n){
+void trieNode :: insert(vector<string> ip,int n,trieNode *root){
   for(auto it : ip)
-    insertHelper(it);
+    insertHelper(it,root);
 }
 
-void trieNode:: searchHelper(string s){
+void trieNode:: searchHelper(string s,trieNode *root){
   trieNode *cur=root;
   int idx;
   for(int i=0;i<s.size();i++){
@@ -74,13 +72,13 @@ void trieNode:: searchHelper(string s){
     cout<<"Not Present"<<endl;
 }
 
-void trieNode :: search(vector<string> op,int m){
+void trieNode :: search(vector<string> op,int m,trieNode *root){
   for(auto it : op)
-    searchHelper(it);
+    searchHelper(it,root);
 }
 
 //The procedure of delete is quite similar to search.
-void trieNode :: removeHelper(string s){
+void trieNode :: removeHelper(string s,trieNode *root){
   trieNode* cur = root;
   int idx;
 
@@ -92,7 +90,7 @@ void trieNode :: removeHelper(string s){
     }
     cur=cur->child[idx];
   }
-  if(cur->isEnd==False)
+  if(cur->isEnd==false)
     cout<<"Element is not present already."<<endl;
   else{
     cur->isEnd=false;
@@ -100,13 +98,15 @@ void trieNode :: removeHelper(string s){
   }
 }
 
-void trieNode :: remove(vector<string> dl,int s3){
+void trieNode :: remove(vector<string> dl,int s3,trieNode *root){
   for(auto it : dl)
-    removeHelper(it);
+    removeHelper(it,root);
 }
 
 int main(){
   trieNode tn;
+  //A root node with default value and that has been taken as a refernece in all the operations.
+  trieNode *root = new trieNode();
   int s1,s2,s3;
   cin>>s1>>s2>>s3;
   vector<string> ip;
@@ -131,8 +131,8 @@ int main(){
     dl.push_back(s);
   }
 
-  tn.insert(ip,s1);
-  tn.search(sr,s2);
-  tn.remove(dl,s3);
+  tn.insert(ip,s1,root);
+  tn.search(sr,s2,root);
+  tn.remove(dl,s3,root);
   
 }
