@@ -1,0 +1,138 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define F(i,L,R) for (int i = L; i < R; i++)
+
+//Trie DataStructure:
+class trieNode{
+  public:
+  //Character of string didn't have anything to do with implementation though.
+  char ch;
+  //An array of pointer of type trieNode.
+  trieNode* child[26];
+  //Boolean variable to check if element present in trie or not
+  //if string repeated take it as a integer variable.
+  bool isEnd;
+  //Intialise the node with default values.
+  trieNode(){
+    for(int i=0;i<26;i++)
+      child[i]=0;
+    isEnd=false;
+  }
+  //Givem below are all the operations that are performed on trie.
+  void insert(vector<string> ip,int n);
+  void insertHelper(string s);
+  void search(vector<string> op,int m);
+  void searchHelper(string s);
+  void remove(vector<string> dl,int s3);
+  void removeHelper(string s);
+};
+//A root node with default value and that has been taken as a refernece in all the operations.
+trieNode *root = new trieNode();
+
+//Helper function to implement insert operation.
+void trieNode :: insertHelper(string s){
+  //take a temporary pointer that refer to root.
+  trieNode *cur = root;
+  int idx;
+  for(int i=0;i<s.size();i++){
+    //Calculate the current index
+    idx=s[i]-'a';
+    //If not present create new and point the temp node to newChild
+    if(!cur->child[idx]){
+        trieNode * newChild = new trieNode();
+        cur->child[idx] = newChild;
+    }
+    cur=cur->child[idx];
+    //If we reach the end, mark that node as true as we stored the whole string.
+    if(i==s.size()-1)
+      cur->isEnd=true;
+  }
+}
+
+void trieNode :: insert(vector<string> ip,int n){
+  for(auto it : ip)
+    insertHelper(it);
+}
+
+void trieNode:: searchHelper(string s){
+  trieNode *cur=root;
+  int idx;
+  for(int i=0;i<s.size();i++){
+    idx = s[i]-'a';
+    if(cur->child[idx])
+      cur=cur->child[idx];
+    //If at any position we don't find the index possible return false.
+    else{
+      cout<<"Not Present"<<endl;
+      return; 
+    }
+  }
+  //If we reach the end and the isEnd flag is true return true otherwise false.
+  if(cur->isEnd)
+    cout<<"Element Present"<<endl;
+  else
+    cout<<"Not Present"<<endl;
+}
+
+void trieNode :: search(vector<string> op,int m){
+  for(auto it : op)
+    searchHelper(it);
+}
+
+//The procedure of delete is quite similar to search.
+void trieNode :: removeHelper(string s){
+  trieNode* cur = root;
+  int idx;
+
+  for(int i=0;i<s.size();i++){
+    idx = s[i]-'a';
+    if(cur->child[idx]==0){
+      cout<<"Element is not present already."<<endl;
+      return;
+    }
+    cur=cur->child[idx];
+  }
+  if(cur->isEnd==False)
+    cout<<"Element is not present already."<<endl;
+  else{
+    cur->isEnd=false;
+    cout<<"Element removed successfully."<<endl;
+  }
+}
+
+void trieNode :: remove(vector<string> dl,int s3){
+  for(auto it : dl)
+    removeHelper(it);
+}
+
+int main(){
+  trieNode tn;
+  int s1,s2,s3;
+  cin>>s1>>s2>>s3;
+  vector<string> ip;
+  vector<string> sr;
+  vector<string> dl;
+
+  F(i,0,s1){
+    string s;
+    cin>>s;
+    ip.push_back(s);
+  }
+
+  F(i,0,s2){
+    string s;
+    cin>>s;
+    sr.push_back(s);
+  }
+
+  F(i,0,s3){
+    string s;
+    cin>>s;
+    dl.push_back(s);
+  }
+
+  tn.insert(ip,s1);
+  tn.search(sr,s2);
+  tn.remove(dl,s3);
+  
+}
