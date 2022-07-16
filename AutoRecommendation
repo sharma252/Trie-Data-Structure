@@ -22,14 +22,11 @@ void trieNode :: insertHelper(string s,trieNode *root){
   int idx;
   for(int i=0;i<s.size();i++){
     idx=s[i]-'a';
-    if(!cur->child[idx]){
-        trieNode * newChild = new trieNode();
-        cur->child[idx] = newChild;
-    }
+    if(!cur->child[idx])
+        cur->child[idx] = new trieNode();
     cur=cur->child[idx];
-    if(i==s.size()-1)
-      cur->isEnd=true;
   }
+  cur->isEnd=true;
 }
 
 void trieNode :: insert(vector<string> ip,int n,trieNode *root){
