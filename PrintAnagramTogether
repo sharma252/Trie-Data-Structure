@@ -1,0 +1,119 @@
+#include <bits/stdc++.h>
+#include <unordered_map>
+using namespace std;
+
+class trieNode{
+    public:
+    bool isEnd;
+    trieNode* child[26];
+    vector<string> group;
+
+    trieNode(){
+        isEnd=false;
+        for(int i=0;i<26;i++)
+            child[i]=0;
+    }
+
+    void insert(string key,trieNode* root){
+        trieNode* cur = root;
+        int idx;
+        string temp=key;
+        sort(key.begin(),key.end());
+
+        for(int i=0;i<key.size();i++){
+            idx = key[i]-'a';
+            if(cur->child[idx]==0)
+                cur->child[idx]=new trieNode();
+            cur=cur->child[idx];
+        }
+        cur->group.push_back(temp);
+        cur->isEnd=true;
+    }
+};
+
+void searchGroup(trieNode* root,vector<vector<string>> &ans){
+	//If we find a word in the trie push it in ans
+    if(root->isEnd)
+        ans.push_back(root->group);
+    //Search for any other string present with same anagram recursively.
+    for(int i=0;i<26;i++)
+        if(root->child[i])
+            searchGroup(root->child[i],ans);
+            
+}
+
+//Another Approach:
+/*
+class Solution{
+  public:
+	vector<vector<string> > Anagrams(vector<string>& string_list) {
+		map<map<char,int>, vector<string>> baseMap;
+
+		for (string str : string_list){
+			map<char,int> tempMap;
+			for (int i = 0; i < str.length(); i++)
+				tempMap[str[i]]++;
+
+			auto it = bmap.find(fmap);
+
+			//If the string is not present in the map:
+			if (it == bmap.end()){
+				vector<string> list {str};
+				baseMap.insert({tempMap, list});
+			}
+			else
+				it->second.push_back(str);
+		}
+
+		vector<vector<string>> anagrams;
+		for (auto it : baseMap)
+			anagrams.push_back(it->second);
+
+		return anagrams;
+	}
+};
+*/
+
+class Solution{
+  public:
+    vector<vector<string> > Anagrams(vector<string>& str) {
+        vector<vector<string> > ans;
+        vector<string> tmp;
+        trieNode trie;
+        trieNode* root= new trieNode();
+        
+        for(auto it : str)
+            trie.insert(it,root);
+            
+        searchGroup(root,ans);
+        
+        return ans;
+        
+    }
+};
+
+int main(){
+    int t;
+    cin>>t;
+    while(t--){
+        int n;
+        cin>>n;
+        vector<string> string_list(n);
+        for (int i = 0; i < n; ++i)
+            cin>>string_list[i]; 
+
+        Solution ob;
+        vector<vector<string> > result = ob.Anagrams(string_list);
+
+        sort(result.begin(),result.end());
+
+        for (int i = 0; i < result.size(); i++){
+            for(int j=0; j < result[i].size(); j++)
+                cout<<result[i][j]<<" ";
+            cout<<"\n";
+        }
+    }
+
+    return 0;
+}
+
