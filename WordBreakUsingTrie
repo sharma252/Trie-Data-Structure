@@ -1,0 +1,87 @@
+//Word Break using trie
+//Good Question
+#include <bits/stdc++.h>
+using namespace std;
+
+class trieNode{
+    public:
+    bool isEnd;
+    trieNode *child[26];
+    
+    trieNode(){
+        for(int i=0;i<26;i++)
+            child[i]=0;
+        isEnd=false;
+    }
+    
+    void insert(string str,trieNode* root){
+        trieNode *cur=root;
+        int idx;
+        for(int i=0;i<str.size();i++){
+            idx = str[i]-'a';
+            if(cur->child[idx]==NULL)
+                cur->child[idx]=new trieNode();
+            cur=cur->child[idx];
+        }
+        cur->isEnd=true;
+    }
+    
+    bool search(string str,trieNode* root){
+        trieNode *cur=root;
+        int idx;
+        for(int i=0;i<str.size();i++){
+            idx = str[i]-'a';
+            if(cur->child[idx]==NULL)
+                return false;
+            cur=cur->child[idx];
+        }
+        return cur && cur->isEnd ;
+    }
+    
+    //A recursive function that will check for all possible prefixes, if its possible to make the desired string.
+    bool wordBreaker(string str,trieNode* root){
+        int n = str.size();
+        if(n==0)
+            return true;
+    
+        for(int i=1;i<=n;i++)
+            if(search(str.substr(0,i),root) && wordBreaker(str.substr(i,n-i),root) )
+                return true;
+                
+        return false;
+    }
+    
+};
+
+class Solution{
+    public:
+    int wordBreak(string str, vector<string> &strs) {
+        trieNode trie;
+        trieNode* root = new trieNode();
+        
+        for(auto it : strs)
+            trie.insert(it,root);
+            
+        return trie.wordBreaker(str,root);
+        
+    }
+};
+
+int main(){
+    int t;
+    cin>>t;
+    while(t--){
+        int n;
+        cin>>n;
+        vector<string> dict;
+        for(int i=0;i<n;i++){
+            string S;
+            cin>>S;
+            dict.push_back(S);
+        }
+        string line;
+        cin>>line;
+        Solution ob;
+        cout<<ob.wordBreak(line, dict)<<"\n";
+    }
+}
